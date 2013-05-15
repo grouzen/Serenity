@@ -1,4 +1,5 @@
 Serenity
 ========
 
-Android java library for asynchronous http requests with sessions support
+Android java library for asynchronous http requests with sessions support.
+
