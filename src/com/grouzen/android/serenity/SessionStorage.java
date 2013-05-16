@@ -10,7 +10,8 @@ public class SessionStorage {
 	
 	private Context context;
 	
-	private static final String STORAGE_KEY = "com.grouzen.android.serenity.SessionStorage.STORAGE_KEY";
+	private static final String STORAGE_KEY = 
+			"com.grouzen.android.serenity.SessionStorage.STORAGE_KEY";
 	
 	private Bundle bundle;
 	
@@ -24,7 +25,6 @@ public class SessionStorage {
 	}
 	
 	public Bundle load() {
-		bundle = new Bundle();
 		SharedPreferences preferences = 
 				context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE);
 		

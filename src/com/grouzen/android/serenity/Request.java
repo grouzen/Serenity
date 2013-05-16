@@ -14,7 +14,7 @@ public class Request {
 	
 	private String url;
 	
-	private HttpConnectionMethod method = HttpConnectionMethod.POST;
+	private HttpConnectionMethod method;
 	
 	public Request(String url, Callback callback, Bundle parameters, 
 			Session session, HttpConnectionMethod method) {
@@ -24,6 +24,10 @@ public class Request {
 		this.url = url;
 		this.method = method;
 		this.connection = new HttpConnection(url, method);
+	}
+	
+	public Request(String url, Callback callback, Bundle parameters, Session session) {
+		this(url, callback, parameters, session, HttpConnectionMethod.POST);
 	}
 	
 	public RequestAsyncTask execute() {
@@ -40,6 +44,10 @@ public class Request {
 	
 	public Bundle getParameters() {
 		return parameters;
+	}
+	
+	public Session getSession() {
+		return session;
 	}
 	
 	public HttpConnection getConnection() {

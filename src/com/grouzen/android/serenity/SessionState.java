@@ -8,7 +8,7 @@ public enum SessionState {
 	
 	CREATED(State.CREATED);
 	
-	private State state;
+	private final State state;
 	
 	SessionState() {
 		this.state = State.CREATED;
@@ -16,22 +16,6 @@ public enum SessionState {
 	
 	SessionState(State state) {
 		this.state = state;
-	}
-	
-	public boolean isOpened() {
-		return this.state == State.OPENED;
-	}
-	
-	public boolean isClosed() {
-		return this.state == State.CLOSED;
-	}
-	
-	public boolean isCreated() {
-		return this.state == State.CREATED;
-	}
-	
-	public State getState() {
-		return state;
 	}
 	
 	private enum State {
