@@ -51,13 +51,7 @@ public class Session {
 		this.stateCallbacks = stateCallbacks;
 		this.storage = new SessionStorage(context);
 		
-		if(stateCallbacks != null) {
-			try {
-				stateCallbacks.onCreated();
-			} catch(SessionState.CallbackNotImplementedException e) {
-				Log.i(TAG, "onCreated callback not implemented");
-			}
-		}
+		callStateCallback(this.state);
 	}
 	
 	public Session(Context context, Session.OpenHandler openHandler) {
@@ -106,26 +100,14 @@ public class Session {
 			//expirationDate = bundle.getString(STORAGE_EXPIRATION_DATE_KEY));
 			state = SessionState.OPENED;
 			
-			if(stateCallbacks != null) {
-				try {
-					stateCallbacks.onOpened();
-				} catch(SessionState.CallbackNotImplementedException e) {
-					Log.i(TAG, "onOpened callback not implemented");
-				}
-			}
+			callStateCallback(state);
 		}
 	}
 	
 	public void close() {
 		state = SessionState.CLOSED;
 		
-		if(stateCallbacks != null) {
-			try {
-				stateCallbacks.onClosed();
-			} catch(SessionState.CallbackNotImplementedException e) {
-				Log.i(TAG, "onClosed callback not implemented");
-			}
-		}
+		callStateCallback(state);
 	}
 	
 	public static interface OpenHandler {
@@ -134,5 +116,27 @@ public class Session {
 		
 	}
 	
+	private void callStateCallback(SessionState state) {
+		if(stateCallbacks != null) {
+			try {
+				switch(state) {
+				case CREATED:
+					stateCallbacks.onCreated();
+					
+					break;
+				case OPENED:
+					stateCallbacks.onOpened();
+					
+					break;
+				case CLOSED:
+					stateCallbacks.onClosed();
+					
+					break;
+				}
+			} catch(SessionState.CallbackNotImplementedException e) {
+				Log.i(TAG, e.getMessage());
+			}
+		}
+	}
 	
 }

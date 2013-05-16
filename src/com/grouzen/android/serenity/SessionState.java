@@ -50,20 +50,24 @@ public enum SessionState {
 
 		private static final long serialVersionUID = 1L;
 		
+		public CallbackNotImplementedException(String message) {
+			super(message);
+		}
+		
 	}
 	
 	public static class Callbacks {
 		
 		public void onCreated() throws CallbackNotImplementedException {
-			throw new CallbackNotImplementedException();
+			throw new CallbackNotImplementedException("onCreated() callback is not implemented");
 		}
 		
 		public void onOpened() throws CallbackNotImplementedException {
-			throw new CallbackNotImplementedException();
+			throw new CallbackNotImplementedException("onOpened() callback is not implemented");
 		}
 		
 		public void onClosed() throws CallbackNotImplementedException {
-			throw new CallbackNotImplementedException();
+			throw new CallbackNotImplementedException("onClosed() callback is not implemented");
 		}
 		
 	}

@@ -69,6 +69,10 @@ public class Response {
 		return exception;
 	}
 	
+	public void setException(Exception e) {
+		exception = e;
+	}
+	
 	public Response fromHttpConnection() {
 		Bundle parameters = request.getParameters();
 		HttpResponse response;
