@@ -39,40 +39,48 @@ public class SessionStorage {
 	}
 	
 	public boolean isEmpty() {
-		return bundle.isEmpty();
+		synchronized(this) {
+			return bundle.isEmpty();
+		}
 	}
 	
 	public Bundle load() {
-		SharedPreferences preferences = 
-				context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE);
-		
-		Map<String, ?> entries = preferences.getAll();
-		
-		for(String key : entries.keySet()) {
-			bundle.putString(key, (String) entries.get(key));
+		synchronized(this) {
+			SharedPreferences preferences = 
+					context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE);
+			
+			Map<String, ?> entries = preferences.getAll();
+			
+			for(String key : entries.keySet()) {
+				bundle.putString(key, (String) entries.get(key));
+			}
+			
+			return bundle;
 		}
-		
-		return bundle;
 	}
 	
 	public void save(Bundle bundle) {
-		SharedPreferences.Editor editor = 
-				context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
-		
-		for(String key : bundle.keySet()) {
-			editor.putString(key, bundle.getString(key));
+		synchronized(this) {
+			SharedPreferences.Editor editor = 
+					context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
+			
+			for(String key : bundle.keySet()) {
+				editor.putString(key, bundle.getString(key));
+			}
+			
+			this.bundle = bundle;
+			editor.commit();
 		}
-		
-		this.bundle = bundle;
-		editor.commit();
 	}
 	
 	public void clear() {
-		SharedPreferences.Editor editor = 
-				context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
-		
-		this.bundle.clear();
-		editor.clear().commit();
+		synchronized(this) {
+			SharedPreferences.Editor editor = 
+					context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
+			
+			this.bundle.clear();
+			editor.clear().commit();
+		}
 	}
 	
 }

@@ -39,8 +39,11 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.os.Bundle;
+import android.util.Log;
 
 public class HttpConnection {
+	
+	private static final String TAG = HttpConnection.class.getCanonicalName();
 	
 	private HttpConnectionMethod method;
 	

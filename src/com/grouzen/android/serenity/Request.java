@@ -18,6 +18,10 @@ limitations under the License.
 
 package com.grouzen.android.serenity;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.graphics.Bitmap;
 import android.os.Bundle;
 
 public class Request {
@@ -51,6 +55,8 @@ public class Request {
 	public RequestAsyncTask execute() {
 		RequestAsyncTask task = new RequestAsyncTask(this);
 		
+		session.getToken().send(this);
+		
 		task.execute();
 		
 		return task;
@@ -80,6 +86,30 @@ public class Request {
 	
 		public void onComplete(Response response);
 	
+	}
+	
+	public static interface CallbackJSONObject {
+	
+		public void onComplete(JSONObject json, Response response);
+	
+	}
+	
+	public static interface CallbackJSONArray {
+		
+		public void onComplete(JSONArray json, Response response);
+		
+	}
+	
+	public static interface CallbackJSONAny {
+		
+		public void onComplete(Object json, Response response);
+	
+	}
+	
+	public static interface CallbackBitmap {
+		
+		public void onComplete(Bitmap bitmap, Response response);
+		
 	}
 	
 }

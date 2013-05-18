@@ -27,7 +27,10 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -46,23 +49,33 @@ public class Response {
 	}
 	
 	private byte[] readData(HttpResponse response) throws IOException {
-		byte[] data = null;
-		
 		if(response != null) {
 			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-				data = EntityUtils.toByteArray(response.getEntity());
+				return EntityUtils.toByteArray(response.getEntity());
 			}
 		}
 		
-		return data;
+		throw new IOException("Bad response");
 	}
 		
+	public String toString() {
+		return new String(data);
+	}
+	
+	public Object toJSONValue() throws JSONException {
+		return new JSONTokener(toString()).nextValue();
+	}
+	
 	public JSONObject toJSONObject() throws JSONException {
-		return new JSONObject(new String(data));
+		return new JSONObject(toString());
 	}
 	
 	public JSONArray toJSONArray() throws JSONException {
-		return new JSONArray(new String(data));
+		return new JSONArray(toString());
+	}
+	
+	public Bitmap toBitmap() {
+		return BitmapFactory.decodeByteArray(data, 0, data.length);
 	}
 	
 	public Exception getException() {
@@ -75,11 +88,24 @@ public class Response {
 	
 	public Response fromHttpConnection() {
 		Bundle parameters = request.getParameters();
+		Session session = request.getSession();
+		Session.ValidateHandler validateHandler = session.getValidateHandler();
 		HttpResponse response;
 		
 		try {
 			response = request.getConnection().send(parameters);
 			data = readData(response);
+			
+			/*
+			 * In this place session validation go on.
+			 * If session is not valid any more,
+			 * session.close() is called.
+			 */
+			if(validateHandler != null) {
+				if(!validateHandler.onValidate(this)) {
+					session.close();
+				}
+			}
 		} catch (ClientProtocolException e) {
 			exception = e;
 		} catch (IOException e) {

@@ -33,86 +33,130 @@ public class Session {
 	
 	private SessionStorage storage;
 	
+	private SessionToken token;
+	
 	private Context context;
 	
 	private SessionState state;
 	
 	private Date expirationDate;
 	
-	private OpenHandler openHandler;
+	private ValidateHandler validateHandler;
 	
 	private SessionState.Callbacks stateCallbacks;
 	
-	public Session(Context context, Session.OpenHandler openHandler, 
-			SessionState.Callbacks stateCallbacks) {
+	public Session(Context context, SessionToken token, 
+			ValidateHandler validateHandler, SessionState.Callbacks stateCallbacks) {
 		this.context = context;
 		this.state = SessionState.CREATED;
-		this.openHandler = openHandler;
+		this.validateHandler = validateHandler;
 		this.stateCallbacks = stateCallbacks;
 		this.storage = new SessionStorage(context);
+		this.token = token;
 		
 		callStateCallback(this.state);
 	}
 	
-	public Session(Context context, Session.OpenHandler openHandler) {
-		this(context, openHandler, null);
+	public Session(Context context, SessionToken token, ValidateHandler validateHandler) {
+		this(context, token, validateHandler, null);
 	}
-	
-	public Session(Context context) {
-		this(context, null, null);
+
+	public Session(Context context, SessionToken token) {
+		this(context, token, null, null);
 	}
 	
 	public boolean isOpened() {
-		return this.state == SessionState.OPENED;
+		synchronized(this) {
+			return this.state == SessionState.OPENED;
+		}
 	}
 	
 	public boolean isClosed() {
-		return this.state == SessionState.CLOSED;
+		synchronized(this) {
+			return this.state == SessionState.CLOSED;
+		}
 	}
 	
 	public boolean isCreated() {
-		return this.state == SessionState.CREATED;
+		synchronized(this) {
+			return this.state == SessionState.CREATED;
+		}
 	}
 	
 	public final Date getExpirationDate() {
-		return expirationDate;
+		synchronized(this) {
+			return expirationDate;
+		}
 	}
 	
 	public void setExpirationDate(Bundle bundle) {
 		//expirationDate = bundle.getString(STORAGE_EXPIRATION_DATE_KEY); 
 	}
 	
-	public final SessionStorage getStorage() {
-		return storage;
+	public ValidateHandler getValidateHandler() {
+		synchronized(this) {
+			return validateHandler;
+		}
 	}
 	
-	public final SessionState getState() {
-		return state;
+	public void setValidateHandler(ValidateHandler handler) {
+		synchronized(this) {
+			validateHandler = handler;
+		}
+	}
+	
+	public SessionStorage getStorage() {
+		synchronized(this) {
+			return storage;
+		}
+	}
+	
+	public SessionState getState() {
+		synchronized(this) {
+			return state;
+		}
+	}
+	
+	public SessionToken getToken() {
+		synchronized(this) {
+			return token;
+		}
 	}
 	
 	public void open() {
-		Bundle bundle = storage.load();
+		Bundle bundle;
 		
-		if(bundle.isEmpty()) {
-			if(openHandler != null)
-				openHandler.onOpen(this);
-		} else {
-			//expirationDate = bundle.getString(STORAGE_EXPIRATION_DATE_KEY));
-			state = SessionState.OPENED;
+		if(!isOpened()) {
+			bundle = storage.load();
 			
-			callStateCallback(state);
+			if(!bundle.isEmpty()) {
+				synchronized(this) {
+					//expirationDate = bundle.getString(STORAGE_EXPIRATION_DATE_KEY));
+					state = SessionState.OPENED;
+					
+					token.fill(bundle);
+					callStateCallback(state);
+				}
+			} else {
+				close();
+			}
 		}
 	}
 	
 	public void close() {
-		state = SessionState.CLOSED;
-		
-		callStateCallback(state);
+		if(isOpened()) {
+			synchronized(this) {
+				state = SessionState.CLOSED;
+				
+				token.clear();
+				callStateCallback(state);
+			}
+		}
 	}
 	
-	public static interface OpenHandler {
+	public static interface ValidateHandler {
 		
-		public boolean onOpen(Session session);
+		public boolean onValidate(Response response);
 		
 	}
 	
@@ -138,5 +182,5 @@ public class Session {
 			}
 		}
 	}
-	
+
 }
