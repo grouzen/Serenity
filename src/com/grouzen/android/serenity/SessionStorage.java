@@ -44,7 +44,15 @@ public class SessionStorage {
 		}
 	}
 	
-	public Bundle load() {
+	public Bundle getBundle() {
+		return bundle;
+	}
+	
+	public void setBundle(Bundle bundle) {
+		this.bundle = bundle;
+	}
+	
+	public void load() {
 		synchronized(this) {
 			SharedPreferences preferences = 
 					context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE);
@@ -54,8 +62,6 @@ public class SessionStorage {
 			for(String key : entries.keySet()) {
 				bundle.putString(key, (String) entries.get(key));
 			}
-			
-			return bundle;
 		}
 	}
 	
@@ -84,5 +90,3 @@ public class SessionStorage {
 	}
 	
 }
-
-

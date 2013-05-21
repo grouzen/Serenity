@@ -52,6 +52,10 @@ public class Request {
 		this(url, callback, parameters, session, HttpConnectionMethod.POST);
 	}
 	
+	public Request(String url, Callback callback, Session session) {
+		this(url, callback, null, session);
+	}
+	
 	public RequestAsyncTask execute() {
 		RequestAsyncTask task = new RequestAsyncTask(this);
 		

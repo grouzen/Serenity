@@ -32,6 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -49,12 +50,15 @@ public class HttpConnection {
 	
 	private HttpClient client;
 	
+	private CookieStore cookies;
+	
 	private String url;
 	
 	public HttpConnection(String url, HttpConnectionMethod method) {
 		this.method = method;
 		this.url = url;
 		this.client = new DefaultHttpClient();
+		this.cookies = new BasicCookieStore();
 	}
 	
 	public HttpConnection(String url) {
@@ -63,6 +67,10 @@ public class HttpConnection {
 	
 	public HttpConnection() {
 		this(null, HttpConnectionMethod.POST);
+	}
+	
+	public CookieStore getCookies() {
+		return cookies;
 	}
 	
 	public void setMethod(HttpConnectionMethod method) {
@@ -93,10 +101,9 @@ public class HttpConnection {
 	private HttpResponse execute(HttpUriRequest request) 
 			throws ClientProtocolException, IOException {
 		HttpResponse response;
-		CookieStore cookieStore = new BasicCookieStore();
 		HttpContext localContext = new BasicHttpContext();
 		
-		localContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+		localContext.setAttribute(ClientContext.COOKIE_STORE, cookies);
 		
 		response = client.execute(request, localContext);
 		

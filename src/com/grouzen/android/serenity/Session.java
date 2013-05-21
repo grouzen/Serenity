@@ -28,9 +28,6 @@ public class Session {
 	
 	public final static String TAG = Session.class.getCanonicalName();
 
-	private static final String STORAGE_EXPIRATION_DATE_KEY = 
-			"com.grounze.android.serenity.SessionStorage.STORAGE_EXPIRATION_DATE_KEY";
-	
 	private SessionStorage storage;
 	
 	private SessionToken token;
@@ -39,8 +36,6 @@ public class Session {
 	
 	private SessionState state;
 	
-	private Date expirationDate;
-	
 	private ValidateHandler validateHandler;
 	
 	private SessionState.Callbacks stateCallbacks;
@@ -48,12 +43,14 @@ public class Session {
 	public Session(Context context, SessionToken token, 
 			ValidateHandler validateHandler, SessionState.Callbacks stateCallbacks) {
 		this.context = context;
-		this.state = SessionState.CREATED;
 		this.validateHandler = validateHandler;
 		this.stateCallbacks = stateCallbacks;
 		this.storage = new SessionStorage(context);
 		this.token = token;
 		
+		this.storage.load();
+		
+		this.state = SessionState.CREATED;
 		callStateCallback(this.state);
 	}
 	
@@ -81,16 +78,6 @@ public class Session {
 		synchronized(this) {
 			return this.state == SessionState.CREATED;
 		}
-	}
-	
-	public final Date getExpirationDate() {
-		synchronized(this) {
-			return expirationDate;
-		}
-	}
-	
-	public void setExpirationDate(Bundle bundle) {
-		//expirationDate = bundle.getString(STORAGE_EXPIRATION_DATE_KEY); 
 	}
 	
 	public ValidateHandler getValidateHandler() {
@@ -124,17 +111,12 @@ public class Session {
 	}
 	
 	public void open() {
-		Bundle bundle;
-		
 		if(!isOpened()) {
-			bundle = storage.load();
-			
-			if(!bundle.isEmpty()) {
+			if(!storage.isEmpty()) {
 				synchronized(this) {
-					//expirationDate = bundle.getString(STORAGE_EXPIRATION_DATE_KEY));
 					state = SessionState.OPENED;
 					
-					token.fill(bundle);
+					token.fill(storage.getBundle());
 					callStateCallback(state);
 				}
 			} else {
@@ -148,7 +130,9 @@ public class Session {
 			synchronized(this) {
 				state = SessionState.CLOSED;
 				
+				storage.clear();
 				token.clear();
+				
 				callStateCallback(state);
 			}
 		}

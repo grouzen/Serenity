@@ -114,7 +114,6 @@ public class Response {
 			exception = e;
 		}
 		
-		
 		return this;
 	}
 	

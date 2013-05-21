@@ -18,16 +18,36 @@ limitations under the License.
 
 package com.grouzen.android.serenity;
 
+import java.util.Date;
+
 import android.os.Bundle;
 
 public abstract class SessionToken {
 
 	protected Bundle bundle;
+
+	public static final String STORAGE_EXPIRATION_DATE_KEY = 
+			"com.grounze.android.serenity.SessionToken.STORAGE_EXPIRATION_DATE_KEY";
+	
+	protected Date expirationDate;
 	
 	public abstract void fill(Bundle bundle);
 	
+	public SessionToken() {
+		bundle = new Bundle();
+		expirationDate = new Date(0);
+	}
+	
 	public void clear() {
 		bundle.clear();
+	}
+	
+	public Date getExpirationDate() {
+		return expirationDate;
+	}
+	
+	public void setExpirationDate(Date date) {
+		expirationDate = date;
 	}
 	
 	/*
@@ -38,8 +58,10 @@ public abstract class SessionToken {
 	public void send(Request request) {
 		Bundle parameters = request.getParameters();
 		
-		for(String key: bundle.keySet()) {
-			parameters.putString(key, bundle.getString(key));
+		if(bundle != null) {
+			for(String key: bundle.keySet()) {
+				parameters.putString(key, bundle.getString(key));
+			}
 		}
 	}
 	
