@@ -62,16 +62,40 @@ public class Response {
 		return new String(data);
 	}
 	
-	public Object toJSONValue() throws JSONException {
-		return new JSONTokener(toString()).nextValue();
+	public Object toJSONAny() {
+		Object json = null;
+		
+		try {
+			json = new JSONTokener(toString()).nextValue();
+		} catch(JSONException e) {
+			setException(e);
+		}
+		
+		return json;
 	}
 	
-	public JSONObject toJSONObject() throws JSONException {
-		return new JSONObject(toString());
+	public JSONObject toJSONObject() {
+		JSONObject json = null;
+		
+		try {
+			json = new JSONObject(toString());
+		} catch(JSONException e) {
+			setException(e);
+		}
+		
+		return json;
 	}
 	
-	public JSONArray toJSONArray() throws JSONException {
-		return new JSONArray(toString());
+	public JSONArray toJSONArray() {
+		JSONArray json = null;
+		
+		try {
+			json = new JSONArray(toString());
+		} catch(JSONException e) {
+			setException(e);
+		}
+		
+		return json;
 	}
 	
 	public Bitmap toBitmap() {

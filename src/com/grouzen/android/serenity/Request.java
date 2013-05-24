@@ -58,8 +58,11 @@ public class Request {
 	
 	public RequestAsyncTask execute() {
 		RequestAsyncTask task = new RequestAsyncTask(this);
+		SessionToken token = session.getToken();
 		
-		session.getToken().send(this);
+		if(!token.isEmpty()) {
+			token.send(this);
+		}
 		
 		task.execute();
 		

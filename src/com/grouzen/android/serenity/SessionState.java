@@ -18,6 +18,8 @@ limitations under the License.
 
 package com.grouzen.android.serenity;
 
+import android.content.Context;
+
 public enum SessionState {
 
 	CLOSED(State.CLOSED),
@@ -58,15 +60,15 @@ public enum SessionState {
 	
 	public static class Callbacks {
 		
-		public void onCreated() throws CallbackNotImplementedException {
+		public void onCreated(Context context) throws CallbackNotImplementedException {
 			throw new CallbackNotImplementedException("onCreated() callback is not implemented");
 		}
 		
-		public void onOpened() throws CallbackNotImplementedException {
+		public void onOpened(Context context) throws CallbackNotImplementedException {
 			throw new CallbackNotImplementedException("onOpened() callback is not implemented");
 		}
 		
-		public void onClosed() throws CallbackNotImplementedException {
+		public void onClosed(Context context) throws CallbackNotImplementedException {
 			throw new CallbackNotImplementedException("onClosed() callback is not implemented");
 		}
 		

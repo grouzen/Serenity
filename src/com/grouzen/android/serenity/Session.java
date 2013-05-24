@@ -41,7 +41,7 @@ public class Session {
 	private SessionState.Callbacks stateCallbacks;
 	
 	public Session(Context context, SessionToken token, 
-			ValidateHandler validateHandler, SessionState.Callbacks stateCallbacks) {
+			SessionState.Callbacks stateCallbacks, ValidateHandler validateHandler) {
 		this.context = context;
 		this.validateHandler = validateHandler;
 		this.stateCallbacks = stateCallbacks;
@@ -51,11 +51,11 @@ public class Session {
 		this.storage.load();
 		
 		this.state = SessionState.CREATED;
-		callStateCallback(this.state);
+		callStateCallback(this.state, context);
 	}
 	
-	public Session(Context context, SessionToken token, ValidateHandler validateHandler) {
-		this(context, token, validateHandler, null);
+	public Session(Context context, SessionToken token, SessionState.Callbacks stateCallbacks) {
+		this(context, token, stateCallbacks, null);
 	}
 
 	public Session(Context context, SessionToken token) {
@@ -117,10 +117,8 @@ public class Session {
 					state = SessionState.OPENED;
 					
 					token.fill(storage.getBundle());
-					callStateCallback(state);
+					callStateCallback(state, context);
 				}
-			} else {
-				close();
 			}
 		}
 	}
@@ -133,7 +131,7 @@ public class Session {
 				storage.clear();
 				token.clear();
 				
-				callStateCallback(state);
+				callStateCallback(state, context);
 			}
 		}
 	}
@@ -144,20 +142,20 @@ public class Session {
 		
 	}
 	
-	private void callStateCallback(SessionState state) {
+	private void callStateCallback(SessionState state, Context context) {
 		if(stateCallbacks != null) {
 			try {
 				switch(state) {
 				case CREATED:
-					stateCallbacks.onCreated();
+					stateCallbacks.onCreated(context);
 					
 					break;
 				case OPENED:
-					stateCallbacks.onOpened();
+					stateCallbacks.onOpened(context);
 					
 					break;
 				case CLOSED:
-					stateCallbacks.onClosed();
+					stateCallbacks.onClosed(context);
 					
 					break;
 				}

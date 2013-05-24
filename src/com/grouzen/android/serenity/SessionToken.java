@@ -27,7 +27,7 @@ public abstract class SessionToken {
 	protected Bundle bundle;
 
 	public static final String STORAGE_EXPIRATION_DATE_KEY = 
-			"com.grounze.android.serenity.SessionToken.STORAGE_EXPIRATION_DATE_KEY";
+			"com.grouzen.android.serenity.SessionToken.STORAGE_EXPIRATION_DATE_KEY";
 	
 	protected Date expirationDate;
 	
@@ -36,6 +36,10 @@ public abstract class SessionToken {
 	public SessionToken() {
 		bundle = new Bundle();
 		expirationDate = new Date(0);
+	}
+	
+	public boolean isEmpty() {
+		return bundle.isEmpty();
 	}
 	
 	public void clear() {
