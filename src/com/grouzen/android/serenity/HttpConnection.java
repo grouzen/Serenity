@@ -32,6 +32,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -109,10 +110,26 @@ public class HttpConnection {
 		
 		return response;
 	}
-	
+
+    private ArrayList<NameValuePair> convertParams(Bundle params) {
+        ArrayList<NameValuePair> entity = new ArrayList<NameValuePair>();
+
+        for(String k : params.keySet()) {
+            entity.add(new BasicNameValuePair(k, params.getString(k)));
+        }
+
+        return entity;
+    }
+
 	private HttpResponse get(String url, Bundle params) 
 			throws ClientProtocolException, IOException {
-		return execute(new HttpGet(url));
+        String urlParametrized = url;
+
+        if(params != null) {
+            urlParametrized += "?" + URLEncodedUtils.format(convertParams(params), "utf-8");
+        }
+
+		return execute(new HttpGet(urlParametrized));
 	}
 	
 	private HttpResponse post(String url, Bundle params) 
@@ -121,12 +138,8 @@ public class HttpConnection {
 		
 		if(params != null) {
 			try {
-				ArrayList<NameValuePair> entity = new ArrayList<NameValuePair>();
-				
-				for(String k : params.keySet()) {
-					entity.add(new BasicNameValuePair(k, params.getString(k)));
-				}
-				
+				ArrayList<NameValuePair> entity = convertParams(params);
+
 				method.setEntity(new UrlEncodedFormEntity(entity));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();

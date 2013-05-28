@@ -37,7 +37,7 @@ public abstract class SessionToken {
 		bundle = new Bundle();
 		expirationDate = new Date(0);
 	}
-	
+
 	public boolean isEmpty() {
 		return bundle.isEmpty();
 	}
