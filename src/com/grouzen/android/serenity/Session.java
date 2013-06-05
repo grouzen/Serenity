@@ -111,29 +111,24 @@ public class Session {
 	}
 	
 	public void open() {
-		if(!isOpened()) {
-			if(!storage.isEmpty()) {
-				synchronized(this) {
-					state = SessionState.OPENED;
-					
-					token.fill(storage.getBundle());
-					callStateCallback(state, context);
-				}
-			}
-		}
+        if(!storage.isEmpty()) {
+            synchronized(this) {
+                state = SessionState.OPENED;
+
+                token.fill(storage.getBundle());
+                callStateCallback(state, context);
+            }
+        }
 	}
 	
 	public void close() {
-		if(isOpened()) {
-			synchronized(this) {
-				state = SessionState.CLOSED;
-				
-				storage.clear();
-				token.clear();
-				
-				callStateCallback(state, context);
-			}
-		}
+        synchronized(this) {
+            state = SessionState.CLOSED;
+
+            storage.clear();
+            token.clear();
+            callStateCallback(state, context);
+        }
 	}
 	
 	public static interface ValidateHandler {

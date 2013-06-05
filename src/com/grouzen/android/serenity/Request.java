@@ -18,6 +18,7 @@ limitations under the License.
 
 package com.grouzen.android.serenity;
 
+import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -25,6 +26,8 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 
 public class Request {
+
+    private static final String TAG = Request.class.getCanonicalName();
 
 	private Session session;
 	
@@ -59,11 +62,11 @@ public class Request {
 	public RequestAsyncTask execute() {
 		RequestAsyncTask task = new RequestAsyncTask(this);
 		SessionToken token = session.getToken();
-		
+
 		if(!token.isEmpty()) {
 			token.send(this);
 		}
-		
+
 		task.execute();
 		
 		return task;
