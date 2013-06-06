@@ -105,7 +105,6 @@ public class HttpConnection {
 		HttpContext localContext = new BasicHttpContext();
 		
 		localContext.setAttribute(ClientContext.COOKIE_STORE, cookies);
-		
 		response = client.execute(request, localContext);
 		
 		return response;
@@ -140,7 +139,7 @@ public class HttpConnection {
 			try {
 				ArrayList<NameValuePair> entity = convertParams(params);
 
-				method.setEntity(new UrlEncodedFormEntity(entity));
+				method.setEntity(new UrlEncodedFormEntity(entity, "UTF-8"));
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			}

@@ -53,13 +53,15 @@ public class Response {
 			if(response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
 				return EntityUtils.toByteArray(response.getEntity());
 			}
+
+            throw new IOException("Bad http status: " + response.getStatusLine().getStatusCode());
 		}
 		
 		throw new IOException("Bad response");
 	}
 		
 	public String toString() {
-		return new String(data);
+        return data != null ? new String(data) : "";
 	}
 	
 	public Object toJSONAny() {
