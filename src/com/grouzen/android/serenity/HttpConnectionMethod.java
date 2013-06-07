@@ -23,9 +23,11 @@ public enum HttpConnectionMethod {
 	GET,
 	
 	POST,
-	
+
 	DELETE,
 	
 	PUT,
+
+
 	
 }

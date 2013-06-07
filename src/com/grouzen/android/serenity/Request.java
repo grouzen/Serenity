@@ -18,7 +18,6 @@ limitations under the License.
 
 package com.grouzen.android.serenity;
 
-import android.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,28 +28,36 @@ public class Request {
 
     private static final String TAG = Request.class.getCanonicalName();
 
-	private Session session;
+	private Session mSession;
 	
-	private Callback callback;
+	private Callback mCallback;
 	
-	private Bundle parameters;
+	private Bundle mParameters;
 	
-	private HttpConnection connection;
+	private HttpConnection mConnection;
 	
-	private String url;
+	private String mUrl;
 	
-	private HttpConnectionMethod method;
+	private HttpConnectionMethod mMethod;
 	
 	public Request(String url, Callback callback, Bundle parameters, 
 			Session session, HttpConnectionMethod method) {
-		this.session = session;
-		this.parameters = parameters;
-		this.callback = callback;
-		this.url = url;
-		this.method = method;
-		this.connection = new HttpConnection(url, method);
+		mSession = session;
+		mParameters = parameters;
+		mCallback = callback;
+		mUrl = url;
+		mMethod = method;
+		mConnection = new HttpConnection(url, method);
 	}
-	
+
+    public Request(String url, Callback callback, Bundle parameters,
+                   Session session, String multipartKey, String multipartFileName) {
+        this(url, callback, parameters, session);
+
+        mConnection.setMultipartKey(multipartKey);
+        mConnection.setMultipartFileName(multipartFileName);
+    }
+
 	public Request(String url, Callback callback, Bundle parameters, Session session) {
 		this(url, callback, parameters, session, HttpConnectionMethod.POST);
 	}
@@ -61,7 +68,7 @@ public class Request {
 	
 	public RequestAsyncTask execute() {
 		RequestAsyncTask task = new RequestAsyncTask(this);
-		SessionToken token = session.getToken();
+		SessionToken token = mSession.getToken();
 
 		if(!token.isEmpty()) {
 			token.send(this);
@@ -73,23 +80,23 @@ public class Request {
 	}
 	
 	public Callback getCallback() {
-		return callback;
+		return mCallback;
 	}
 	
 	public Bundle getParameters() {
-		return parameters;
+		return mParameters;
 	}
 	
 	public Session getSession() {
-		return session;
+		return mSession;
 	}
 	
 	public HttpConnection getConnection() {
-		return connection;
+		return mConnection;
 	}
 	
 	public String getUrl() {
-		return url;
+		return mUrl;
 	}
 	
 	public static interface Callback {

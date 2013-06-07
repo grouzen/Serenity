@@ -20,8 +20,10 @@ package com.grouzen.android.serenity;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 
+import android.util.Log;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -33,7 +35,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.client.utils.URLEncodedUtils;
-import org.apache.http.cookie.Cookie;
+import org.apache.http.entity.mime.FormBodyPart;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.ByteArrayBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -41,25 +47,30 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.os.Bundle;
-import android.util.Log;
 
 public class HttpConnection {
 	
 	private static final String TAG = HttpConnection.class.getCanonicalName();
+
+    private static final String CHARSET = "UTF-8";
 	
-	private HttpConnectionMethod method;
+	private HttpConnectionMethod mMethod;
 	
-	private HttpClient client;
+	private HttpClient mClient;
 	
-	private CookieStore cookies;
+	private CookieStore mCookies;
 	
-	private String url;
+	private String mUrl;
+
+    private String mMultipartKey;
+
+    private String mMultipartFileName;
 	
 	public HttpConnection(String url, HttpConnectionMethod method) {
-		this.method = method;
-		this.url = url;
-		this.client = new DefaultHttpClient();
-		this.cookies = new BasicCookieStore();
+		this.mMethod = method;
+		this.mUrl = url;
+		this.mClient = new DefaultHttpClient();
+		this.mCookies = new BasicCookieStore();
 	}
 	
 	public HttpConnection(String url) {
@@ -69,26 +80,34 @@ public class HttpConnection {
 	public HttpConnection() {
 		this(null, HttpConnectionMethod.POST);
 	}
-	
+
+    public void setMultipartKey(String key) {
+        mMultipartKey = key;
+    }
+
+    public void setMultipartFileName(String fileName) {
+        mMultipartFileName = fileName;
+    }
+
 	public CookieStore getCookies() {
-		return cookies;
+		return mCookies;
 	}
 	
 	public void setMethod(HttpConnectionMethod method) {
-		this.method = method;
+		this.mMethod = method;
 	}
 	
 	public void setUrl(String url) {
-		this.url = url;
+		this.mUrl = url;
 	}
 	
 	public HttpResponse send(Bundle params) 
 			throws ClientProtocolException, IOException {
-		switch(method) {
+		switch(mMethod) {
 		case POST:
-			return post(url, params);
+			return post(mUrl, params);
 		case GET:
-			return get(url, params);
+			return get(mUrl, params);
 		default:
 			return null;
 		}
@@ -104,8 +123,8 @@ public class HttpConnection {
 		HttpResponse response;
 		HttpContext localContext = new BasicHttpContext();
 		
-		localContext.setAttribute(ClientContext.COOKIE_STORE, cookies);
-		response = client.execute(request, localContext);
+		localContext.setAttribute(ClientContext.COOKIE_STORE, mCookies);
+		response = mClient.execute(request, localContext);
 		
 		return response;
 	}
@@ -125,7 +144,7 @@ public class HttpConnection {
         String urlParametrized = url;
 
         if(params != null) {
-            urlParametrized += "?" + URLEncodedUtils.format(convertParams(params), "utf-8");
+            urlParametrized += "?" + URLEncodedUtils.format(convertParams(params), CHARSET);
         }
 
 		return execute(new HttpGet(urlParametrized));
@@ -136,14 +155,30 @@ public class HttpConnection {
 		HttpPost method = new HttpPost(url);
 		
 		if(params != null) {
-			try {
-				ArrayList<NameValuePair> entity = convertParams(params);
+            try {
+                if(mMultipartKey != null && mMultipartFileName != null) {
+                    ByteArrayBody byteArrayBody = new ByteArrayBody(params.getByteArray(mMultipartKey), mMultipartFileName);
+                    MultipartEntity entity = new MultipartEntity(HttpMultipartMode.BROWSER_COMPATIBLE);
+                    Charset charset = Charset.forName(CHARSET);
 
-				method.setEntity(new UrlEncodedFormEntity(entity, "UTF-8"));
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-		}
+                    entity.addPart(mMultipartKey, byteArrayBody);
+                    params.remove(mMultipartKey);
+
+                    for(String k : params.keySet()) {
+                        entity.addPart(new FormBodyPart(k, new StringBody(params.getString(k), charset)));
+                    }
+
+                    method.setEntity(entity);
+                } else {
+                        ArrayList<NameValuePair> entity = convertParams(params);
+
+                        method.setEntity(new UrlEncodedFormEntity(entity, CHARSET));
+
+                }
+            }  catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+        }
 		
 		return execute(method);
 	}
