@@ -28,14 +28,14 @@ public enum SessionState {
 	
 	CREATED(State.CREATED);
 	
-	private final State state;
+	private final State mState;
 	
 	SessionState() {
-		this.state = State.CREATED;
+		this.mState = State.CREATED;
 	}
 	
 	SessionState(State state) {
-		this.state = state;
+		this.mState = state;
 	}
 	
 	private enum State {

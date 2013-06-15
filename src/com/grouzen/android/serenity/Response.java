@@ -32,20 +32,19 @@ import org.json.JSONTokener;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 
 public class Response {
 
 	private final static String TAG = Response.class.getCanonicalName();
 	
-	private Request request;
+	private Request mRequest;
 	
-	private byte[] data;
+	private byte[] mData;
 	
-	private Exception exception;
+	private Exception mException;
 	
 	public Response(Request request) {
-		this.request = request;
+		mRequest = request;
 	}
 	
 	private byte[] readData(HttpResponse response) throws IOException {
@@ -61,7 +60,7 @@ public class Response {
 	}
 		
 	public String toString() {
-        return data != null ? new String(data) : "";
+        return mData != null ? new String(mData) : "";
 	}
 	
 	public Object toJSONAny() {
@@ -101,26 +100,26 @@ public class Response {
 	}
 	
 	public Bitmap toBitmap() {
-		return BitmapFactory.decodeByteArray(data, 0, data.length);
+		return BitmapFactory.decodeByteArray(mData, 0, mData.length);
 	}
 	
 	public Exception getException() {
-		return exception;
+		return mException;
 	}
 	
 	public void setException(Exception e) {
-		exception = e;
+		mException = e;
 	}
 	
 	public Response fromHttpConnection() {
-		Bundle parameters = request.getParameters();
-		Session session = request.getSession();
+		Bundle parameters = mRequest.getParameters();
+		Session session = mRequest.getSession();
 		Session.ValidateHandler validateHandler = session.getValidateHandler();
 		HttpResponse response;
 		
 		try {
-			response = request.getConnection().send(parameters);
-			data = readData(response);
+			response = mRequest.getConnection().send(parameters);
+			mData = readData(response);
 			
 			/*
 			 * In this place session validation go on.
@@ -133,18 +132,18 @@ public class Response {
 				}
 			}
 		} catch (ClientProtocolException e) {
-			exception = e;
+			mException = e;
 		} catch (IOException e) {
-			exception = e;
+			mException = e;
 		} catch(IllegalStateException e) {
-			exception = e;
+			mException = e;
 		}
 		
 		return this;
 	}
 	
 	public Request getRequest() {
-		return request;
+		return mRequest;
 	}
 	
 }

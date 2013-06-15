@@ -26,41 +26,41 @@ import android.os.Bundle;
 
 public class SessionStorage {
 	
-	private Context context;
+	private Context mContext;
 	
 	private static final String STORAGE_KEY = 
 			"com.grouzen.android.serenity.SessionStorage.STORAGE_KEY";
 	
-	private Bundle bundle;
+	private Bundle mBundle;
 	
 	public SessionStorage(Context context) {
-		this.context = context;
-		this.bundle = new Bundle();
+		mContext = context;
+		mBundle = new Bundle();
 	}
 	
 	public boolean isEmpty() {
 		synchronized(this) {
-			return bundle.isEmpty();
+			return mBundle.isEmpty();
 		}
 	}
 	
 	public Bundle getBundle() {
-		return bundle;
+		return mBundle;
 	}
 	
 	public void setBundle(Bundle bundle) {
-		this.bundle = bundle;
+		this.mBundle = bundle;
 	}
 	
 	public void load() {
 		synchronized(this) {
 			SharedPreferences preferences = 
-					context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE);
+					mContext.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE);
 			
 			Map<String, ?> entries = preferences.getAll();
 			
 			for(String key : entries.keySet()) {
-				bundle.putString(key, (String) entries.get(key));
+				mBundle.putString(key, (String) entries.get(key));
 			}
 		}
 	}
@@ -68,13 +68,13 @@ public class SessionStorage {
 	public void save(Bundle bundle) {
 		synchronized(this) {
 			SharedPreferences.Editor editor = 
-					context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
+					mContext.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
 			
 			for(String key : bundle.keySet()) {
 				editor.putString(key, bundle.getString(key));
 			}
 			
-			this.bundle = bundle;
+			mBundle = bundle;
 			editor.commit();
 		}
 	}
@@ -82,9 +82,9 @@ public class SessionStorage {
 	public void clear() {
 		synchronized(this) {
 			SharedPreferences.Editor editor = 
-					context.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
+					mContext.getSharedPreferences(STORAGE_KEY, Context.MODE_PRIVATE).edit();
 			
-			this.bundle.clear();
+			mBundle.clear();
 			editor.clear().commit();
 		}
 	}

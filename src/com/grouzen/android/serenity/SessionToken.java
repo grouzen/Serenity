@@ -24,47 +24,51 @@ import android.os.Bundle;
 
 public abstract class SessionToken {
 
-	protected Bundle bundle;
+	protected Bundle mBundle;
 
 	public static final String STORAGE_EXPIRATION_DATE_KEY = 
 			"com.grouzen.android.serenity.SessionToken.STORAGE_EXPIRATION_DATE_KEY";
 	
-	protected Date expirationDate;
+	protected Date mExpirationDate;
 	
 	public abstract void fill(Bundle bundle);
 	
 	public SessionToken() {
-		bundle = new Bundle();
-		expirationDate = new Date(0);
+		mBundle = new Bundle();
+		mExpirationDate = new Date(0);
 	}
 
+    public Bundle getBundle() {
+        return mBundle;
+    }
+
 	public boolean isEmpty() {
-		return bundle.isEmpty();
+		return mBundle.isEmpty();
 	}
 	
 	public void clear() {
-		bundle.clear();
+		mBundle.clear();
 	}
 	
 	public Date getExpirationDate() {
-		return expirationDate;
+		return mExpirationDate;
 	}
 	
 	public void setExpirationDate(Date date) {
-		expirationDate = date;
+		mExpirationDate = date;
 	}
 	
 	/*
 	 * Default behavior of this method - add token's 
-	 * bundle to the request parameters. You can override
+	 * mBundle to the request parameters. You can override
 	 * it in your own SessionToken class.  
 	 */
 	public void send(Request request) {
 		Bundle parameters = request.getParameters();
 		
-		if(bundle != null) {
-			for(String key: bundle.keySet()) {
-				parameters.putString(key, bundle.getString(key));
+		if(mBundle != null) {
+			for(String key: mBundle.keySet()) {
+				parameters.putString(key, mBundle.getString(key));
 			}
 		}
 	}

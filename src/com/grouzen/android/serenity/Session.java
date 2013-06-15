@@ -18,40 +18,37 @@ limitations under the License.
 
 package com.grouzen.android.serenity;
 
-import java.util.Date;
-
 import android.content.Context;
-import android.os.Bundle;
 import android.util.Log;
 
 public class Session {
 	
 	public final static String TAG = Session.class.getCanonicalName();
 
-	private SessionStorage storage;
+	private SessionStorage mStorage;
 	
-	private SessionToken token;
+	private SessionToken mToken;
 	
-	private Context context;
+	private Context mContext;
 	
-	private SessionState state;
+	private SessionState mState;
 	
-	private ValidateHandler validateHandler;
+	private ValidateHandler mValidateHandler;
 	
-	private SessionState.Callbacks stateCallbacks;
+	private SessionState.Callbacks mStateCallbacks;
 	
 	public Session(Context context, SessionToken token, 
 			SessionState.Callbacks stateCallbacks, ValidateHandler validateHandler) {
-		this.context = context;
-		this.validateHandler = validateHandler;
-		this.stateCallbacks = stateCallbacks;
-		this.storage = new SessionStorage(context);
-		this.token = token;
+		mContext = context;
+		mValidateHandler = validateHandler;
+		mStateCallbacks = stateCallbacks;
+		mStorage = new SessionStorage(context);
+		mToken = token;
 		
-		this.storage.load();
+		mStorage.load();
 		
-		this.state = SessionState.CREATED;
-		callStateCallback(this.state, context);
+		mState = SessionState.CREATED;
+		callStateCallback(mState, context);
 	}
 	
 	public Session(Context context, SessionToken token, SessionState.Callbacks stateCallbacks) {
@@ -64,70 +61,70 @@ public class Session {
 	
 	public boolean isOpened() {
 		synchronized(this) {
-			return this.state == SessionState.OPENED;
+			return mState == SessionState.OPENED;
 		}
 	}
 	
 	public boolean isClosed() {
 		synchronized(this) {
-			return this.state == SessionState.CLOSED;
+			return mState == SessionState.CLOSED;
 		}
 	}
 	
 	public boolean isCreated() {
 		synchronized(this) {
-			return this.state == SessionState.CREATED;
+			return mState == SessionState.CREATED;
 		}
 	}
 	
 	public ValidateHandler getValidateHandler() {
 		synchronized(this) {
-			return validateHandler;
+			return mValidateHandler;
 		}
 	}
 	
 	public void setValidateHandler(ValidateHandler handler) {
 		synchronized(this) {
-			validateHandler = handler;
+			mValidateHandler = handler;
 		}
 	}
 	
 	public SessionStorage getStorage() {
 		synchronized(this) {
-			return storage;
+			return mStorage;
 		}
 	}
 	
 	public SessionState getState() {
 		synchronized(this) {
-			return state;
+			return mState;
 		}
 	}
 	
 	public SessionToken getToken() {
 		synchronized(this) {
-			return token;
+			return mToken;
 		}
 	}
 	
 	public void open() {
-        if(!storage.isEmpty()) {
+        if(!mStorage.isEmpty()) {
             synchronized(this) {
-                state = SessionState.OPENED;
+                mState = SessionState.OPENED;
 
-                token.fill(storage.getBundle());
-                callStateCallback(state, context);
+                mToken.fill(mStorage.getBundle());
+                callStateCallback(mState, mContext);
             }
         }
 	}
 	
 	public void close() {
         synchronized(this) {
-            state = SessionState.CLOSED;
+            mState = SessionState.CLOSED;
 
-            storage.clear();
-            token.clear();
-            callStateCallback(state, context);
+            mStorage.clear();
+            mToken.clear();
+            callStateCallback(mState, mContext);
         }
 	}
 	
@@ -138,19 +135,19 @@ public class Session {
 	}
 	
 	private void callStateCallback(SessionState state, Context context) {
-		if(stateCallbacks != null) {
+		if(mStateCallbacks != null) {
 			try {
 				switch(state) {
 				case CREATED:
-					stateCallbacks.onCreated(context);
+					mStateCallbacks.onCreated(context);
 					
 					break;
 				case OPENED:
-					stateCallbacks.onOpened(context);
+					mStateCallbacks.onOpened(context);
 					
 					break;
 				case CLOSED:
-					stateCallbacks.onClosed(context);
+					mStateCallbacks.onClosed(context);
 					
 					break;
 				}
