@@ -39,7 +39,11 @@ public class RequestAsyncTask
 	
 	@Override 
 	protected void onPostExecute(Response response) {
-		response.getRequest().getCallback().onComplete(response);
+        if(response.getException() != null && request.getExceptionHandler() != null) {
+            request.getExceptionHandler().onException(response.getException());
+        } else {
+		    response.getRequest().getCallback().onComplete(response);
+        }
 	}
 
 }

@@ -31,6 +31,8 @@ public class Request {
 	private Session mSession;
 	
 	private Callback mCallback;
+
+    private ExceptionHandler mExceptionHandler;
 	
 	private Bundle mParameters;
 	
@@ -98,7 +100,23 @@ public class Request {
 	public String getUrl() {
 		return mUrl;
 	}
-	
+
+    public Request setExceptionHandler(ExceptionHandler handler) {
+        mExceptionHandler = handler;
+
+        return this;
+    }
+
+    public ExceptionHandler getExceptionHandler() {
+        return mExceptionHandler;
+    }
+
+    public static interface ExceptionHandler {
+
+        public void onException(Exception e);
+
+    }
+
 	public static interface Callback {
 	
 		public void onComplete(Response response);
