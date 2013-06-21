@@ -72,7 +72,12 @@ public class Request {
 		RequestAsyncTask task = new RequestAsyncTask(this);
 		SessionToken token = mSession.getToken();
 
-		if(!token.isEmpty()) {
+		if(token.isFilled()) {
+            if(!token.isExpired()) {
+                mSession.close();
+                return null;
+            }
+
 			token.send(this);
 		}
 

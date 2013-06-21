@@ -21,6 +21,7 @@ package com.grouzen.android.serenity;
 import java.util.Date;
 
 import android.os.Bundle;
+import android.text.format.Time;
 
 public abstract class SessionToken {
 
@@ -35,14 +36,14 @@ public abstract class SessionToken {
 	
 	public SessionToken() {
 		mBundle = new Bundle();
-		mExpirationDate = new Date(0);
+		mExpirationDate = null;
 	}
 
     public Bundle getBundle() {
         return mBundle;
     }
 
-	public boolean isEmpty() {
+	public boolean isFilled() {
 		return mBundle.isEmpty();
 	}
 	
@@ -57,6 +58,18 @@ public abstract class SessionToken {
 	public void setExpirationDate(Date date) {
 		mExpirationDate = date;
 	}
+
+    public boolean isExpired() {
+        Date currentDate = new Date();
+
+        if(mExpirationDate != null) {
+            if(mExpirationDate.getTime() > currentDate.getTime())
+                return true;
+
+        }
+
+        return false;
+    }
 	
 	/*
 	 * Default behavior of this method - add token's 
