@@ -44,7 +44,7 @@ public abstract class SessionToken {
     }
 
 	public boolean isFilled() {
-		return mBundle.isEmpty();
+		return !mBundle.isEmpty();
 	}
 	
 	public void clear() {
@@ -62,11 +62,9 @@ public abstract class SessionToken {
     public boolean isExpired() {
         Date currentDate = new Date();
 
-        if(mExpirationDate != null) {
-            if(mExpirationDate.getTime() > currentDate.getTime())
+        if(mExpirationDate != null &&
+           currentDate.getTime() > mExpirationDate.getTime())
                 return true;
-
-        }
 
         return false;
     }

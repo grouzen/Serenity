@@ -73,8 +73,9 @@ public class Request {
 		SessionToken token = mSession.getToken();
 
 		if(token.isFilled()) {
-            if(!token.isExpired()) {
+            if(token.isExpired()) {
                 mSession.close();
+
                 return null;
             }
 
