@@ -114,7 +114,7 @@ public class Response {
 	public Response fromHttpConnection() {
 		Bundle parameters = mRequest.getParameters();
 		Session session = mRequest.getSession();
-		Session.ValidateHandler validateHandler = session.getValidateHandler();
+		Session.ValidateHandler validateHandler = session != null ? session.getValidateHandler() : null;
 		HttpResponse response;
 		
 		try {

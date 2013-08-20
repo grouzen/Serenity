@@ -76,7 +76,7 @@ public abstract class SessionToken {
 	 */
 	public void send(Request request) {
 		Bundle parameters = request.getParameters();
-		
+
 		if(mBundle != null) {
 			for(String key: mBundle.keySet()) {
 				parameters.putString(key, mBundle.getString(key));

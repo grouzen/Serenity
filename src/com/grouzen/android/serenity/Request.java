@@ -63,24 +63,31 @@ public class Request {
 	public Request(String url, Callback callback, Bundle parameters, Session session) {
 		this(url, callback, parameters, session, HttpConnectionMethod.POST);
 	}
-	
+
 	public Request(String url, Callback callback, Session session) {
 		this(url, callback, null, session);
 	}
+
+    public Request(String url, Callback callback, HttpConnectionMethod method) {
+        this(url, callback, null, null, method);
+    }
 	
 	public RequestAsyncTask execute() {
 		RequestAsyncTask task = new RequestAsyncTask(this);
-		SessionToken token = mSession.getToken();
 
-		if(token.isFilled()) {
-            if(token.isExpired()) {
-                mSession.close();
+        if(mSession != null) {
+            SessionToken token = mSession.getToken();
 
-                return null;
+            if(token.isFilled()) {
+                if(token.isExpired()) {
+                    mSession.close();
+
+                    return null;
+                }
+
+                token.send(this);
             }
-
-			token.send(this);
-		}
+        }
 
 		task.execute();
 		
@@ -94,6 +101,10 @@ public class Request {
 	public Bundle getParameters() {
 		return mParameters;
 	}
+
+    public void setParameters(Bundle parameters) {
+        mParameters = parameters;
+    }
 	
 	public Session getSession() {
 		return mSession;
