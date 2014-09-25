@@ -122,7 +122,7 @@ public class HttpConnection {
 			throws ClientProtocolException, IOException {
 		HttpResponse response;
 		HttpContext localContext = new BasicHttpContext();
-		
+
 		localContext.setAttribute(ClientContext.COOKIE_STORE, mCookies);
 		response = mClient.execute(request, localContext);
 		

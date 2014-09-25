@@ -39,9 +39,9 @@ public class Request {
 	private HttpConnection mConnection;
 	
 	private String mUrl;
-	
+
 	private HttpConnectionMethod mMethod;
-	
+
 	public Request(String url, Callback callback, Bundle parameters, 
 			Session session, HttpConnectionMethod method) {
 		mSession = session;
@@ -134,33 +134,69 @@ public class Request {
 
     }
 
-	public static interface Callback {
+	public static interface Callback<T> {
 	
 		public void onComplete(Response response);
-	
+        public void onSuccess(T data, Response response);
+        public void onFailure(T data, Response response);
+
+	}
+
+    private static class CallbackValidation<T> {
+
+        public Boolean isValid(T data, Response response) {
+            return data != null;
+        }
+
+        protected final <A extends Callback> void validate(T data, Response response, A callback) {
+            if(isValid(data, response)) {
+                callback.onSuccess(data, response);
+            } else {
+                callback.onFailure(data, response);
+            }
+        }
+    }
+
+	public static abstract class CallbackJSONObject extends CallbackValidation<JSONObject> implements Callback<JSONObject> {
+
+        @Override
+	    public void onComplete(Response response) {
+            JSONObject json = response.toJSONObject();
+
+            validate(json, response, this);
+        }
 	}
 	
-	public static interface CallbackJSONObject {
-	
-		public void onComplete(JSONObject json, Response response);
-	
+	public static abstract class CallbackJSONArray extends CallbackValidation<JSONArray> implements Callback<JSONArray> {
+
+        @Override
+        public void onComplete(Response response) {
+            JSONArray json = response.toJSONArray();
+
+            validate(json, response, this);
+        }
+
 	}
 	
-	public static interface CallbackJSONArray {
-		
-		public void onComplete(JSONArray json, Response response);
-		
+	public static abstract class CallbackJSONAny extends CallbackValidation<Object> implements Callback<Object> {
+
+        @Override
+        public void onComplete(Response response) {
+            Object json = response.toJSONAny();
+
+            validate(json, response, this);
+        }
+
 	}
 	
-	public static interface CallbackJSONAny {
-		
-		public void onComplete(Object json, Response response);
-	
-	}
-	
-	public static interface CallbackBitmap {
-		
-		public void onComplete(Bitmap bitmap, Response response);
+	public static abstract class CallbackBitmap extends CallbackValidation<Bitmap> implements Callback<Bitmap> {
+
+        @Override
+		public void onComplete(Response response) {
+            Bitmap bitmap = response.toBitmap();
+
+            validate(bitmap, response, this);
+        }
 		
 	}
 	

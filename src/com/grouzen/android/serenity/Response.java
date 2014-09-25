@@ -60,7 +60,7 @@ public class Response {
 	}
 		
 	public String toString() {
-        return mData != null ? new String(mData) : "";
+        return mData != null ? new String(mData) : null;
 	}
 	
 	public Object toJSONAny() {
@@ -122,9 +122,8 @@ public class Response {
 			mData = readData(response);
 			
 			/*
-			 * In this place session validation go on.
-			 * If session is not valid any more,
-			 * session.close() is called.
+			 * Here session validation goes on.
+			 * If session is not valid anymore, session.close() will be called.
 			 */
 			if(validateHandler != null) {
 				if(!validateHandler.onValidate(this)) {

@@ -23,6 +23,10 @@ import java.util.Date;
 import android.os.Bundle;
 import android.text.format.Time;
 
+/*
+ * TODO:
+ *  - finish with 'token expiration' feature.
+ */
 public abstract class SessionToken {
 
 	protected Bundle mBundle;
