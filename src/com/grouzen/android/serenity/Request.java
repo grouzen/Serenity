@@ -148,12 +148,18 @@ public class Request {
             return data != null;
         }
 
+        public void onAny(T data, Response response) {
+            return;
+        }
+
         protected final <A extends Callback> void validate(T data, Response response, A callback) {
             if(isValid(data, response)) {
                 callback.onSuccess(data, response);
             } else {
                 callback.onFailure(data, response);
             }
+
+            onAny(data, response);
         }
     }
 
